@@ -10,8 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.androidtest.ui.screens.MainScreen
+import com.example.androidtest.ui.features.search_screen.SearchContract
+import com.example.androidtest.ui.features.search_screen.SearchScreen
 import com.example.androidtest.ui.theme.AndroidTestTheme
+import kotlinx.coroutines.flow.emptyFlow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+
                 }
             }
         }

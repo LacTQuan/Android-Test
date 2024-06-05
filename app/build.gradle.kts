@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.compose.material:material:1.5.1")
 
     // Compose Material3
     implementation("androidx.compose.material3:material3:1.2.1")
@@ -81,6 +82,7 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
@@ -90,6 +92,16 @@ dependencies {
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.5.0-alpha01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0-alpha01")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

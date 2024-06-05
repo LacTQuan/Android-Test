@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SearchApi @Inject constructor(private val service: SearchService) {
+class SearchApi @Inject constructor(private val service: Service) {
     suspend fun searchImages(request: SearchRequest): SearchResponse {
         return service.searchImages(request)
     }
@@ -18,15 +18,11 @@ class SearchApi @Inject constructor(private val service: SearchService) {
         return service.autocomplete(request)
     }
 
-    interface SearchService {
+    interface Service {
         @POST("images")
         suspend fun searchImages(@Body request: SearchRequest): SearchResponse
 
         @POST("autocomplete")
         suspend fun autocomplete(@Body request: SearchRequest): AutoCompleteResponse
-    }
-
-    companion object {
-        const val API_URL = "https://google.serper.dev/"
     }
 }
