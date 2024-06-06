@@ -110,6 +110,12 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.7.0-alpha07")
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
+    // Redis
+    implementation("redis.clients:jedis:4.2.3")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

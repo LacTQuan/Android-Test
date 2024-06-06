@@ -59,6 +59,7 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
                 performSearch()
             }
         }
+        state = state.copy(page = 1)
     }
 
     fun loadMore() {
@@ -71,6 +72,7 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
     private suspend fun performSearch() {
         state = state.copy(isActive = false, isLoading = true)
         val searchResponse = searchService.search(state.query, state.page)
+        Log.d("SearchViewModel", "Search response: $searchResponse")
         if (state.page == 1) {
             state = state.copy(searchResults = searchResponse, isLoading = false)
         } else if (state.page > 1) {

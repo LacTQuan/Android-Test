@@ -2,12 +2,13 @@ package com.example.androidtest.di
 
 import com.example.androidtest.BuildConfig
 import com.example.androidtest.model.SearchApi
-import com.google.gson.internal.GsonBuildConfig
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import redis.clients.jedis.Jedis
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -51,5 +52,17 @@ class SearchResultApiProvider {
         retrofit: Retrofit
     ): SearchApi.Service {
         return retrofit.create(SearchApi.Service::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideJedis(): Jedis {
+        return Jedis(BuildConfig.REDIS_HOST, 6379)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
     }
 }
