@@ -33,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -49,6 +49,18 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/spring.tooling"
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "notice.txt"
+            excludes += "license.txt"
+            excludes += "META-INF/license.txt"
+            excludes += "META-INF/spring.handlers"
+            excludes += "META-INF/spring.schemas"
+            excludes += "META-INF/spring-configuration-metadata.json"
+            excludes += "META-INF/additional-spring-configuration-metadata.json"
+            excludes += "META-INF/spring.factories"
+            excludes += "META-INF/*"
+            excludes += "META-INF/spring/aot.factories"
         }
     }
 }
@@ -109,6 +121,9 @@ dependencies {
     // Shared Transition
     implementation("androidx.compose.foundation:foundation:1.7.0-alpha07")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
