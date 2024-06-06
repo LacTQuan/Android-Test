@@ -1,25 +1,28 @@
 package com.example.androidtest.ui.features.search_screen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.androidtest.service.SearchService
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.androidtest.service.SearchService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val searchService: SearchService) : ViewModel() {
+    private var lastQueryTime: Long = 0
     var state by mutableStateOf(
         SearchContract.State(
             searchResults = null,
             query = "",
             isActive = false,
-            suggestions = emptyList()
+            suggestions = emptyList(),
+            page = 1
         )
     )
         private set
@@ -30,17 +33,56 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
 
     fun onQueryChange(query: String) {
         state = state.copy(query = query)
+        if (state.isActive) {
+            if (query.isEmpty()) {
+                state = state.copy(suggestions = emptyList())
+            } else if (System.currentTimeMillis() - lastQueryTime > 200) {
+                lastQueryTime = System.currentTimeMillis()
+//                viewModelScope.launch {
+//                    performAutocomplete()
+//                }
+            }
+        }
     }
 
     fun onActiveChange(isActive: Boolean) {
         state = state.copy(isActive = isActive)
+        if (isActive) {
+            lastQueryTime = System.currentTimeMillis()
+        }
     }
 
-    suspend fun onSearch() {
-        val searchResponse = searchService.search(state.query)
-        viewModelScope.launch {
-            state = state.copy(searchResults = searchResponse, isActive = false)
-            effects.send(SearchContract.Effect.DataWasLoaded)
+    fun onSearch(query: String) {
+        if (query.isNotEmpty()) {
+            state = state.copy(query = query)
+            viewModelScope.launch {
+                performSearch()
+            }
         }
+    }
+
+    fun loadMore() {
+        state = state.copy(page = state.page + 1)
+        viewModelScope.launch {
+            performSearch()
+        }
+    }
+
+    private suspend fun performSearch() {
+        state = state.copy(isActive = false)
+        val searchResponse = searchService.search(state.query, state.page)
+        Log.d("SearchViewModel", "performSearch: ${state.page}")
+        if (state.page == 1) {
+            state = state.copy(searchResults = searchResponse)
+        } else if (state.page > 1) {
+            val currentResults = state.searchResults?.images ?: emptyList()
+            state = state.copy(searchResults = searchResponse.copy(images = currentResults + searchResponse.images))
+        }
+        effects.send(SearchContract.Effect.DataWasLoaded)
+    }
+
+    private suspend fun performAutocomplete() {
+        val autocompleteResponse = searchService.autocomplete(state.query)
+        state = state.copy(suggestions = autocompleteResponse.suggestions)
     }
 }

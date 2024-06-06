@@ -1,6 +1,7 @@
 package com.example.androidtest.di
 
 import com.example.androidtest.BuildConfig
+import com.example.androidtest.model.SearchApi
 import com.google.gson.internal.GsonBuildConfig
 import dagger.Module
 import dagger.Provides
@@ -42,5 +43,13 @@ class SearchResultApiProvider {
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BuildConfig.API_URL)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchApiService(
+        retrofit: Retrofit
+    ): SearchApi.Service {
+        return retrofit.create(SearchApi.Service::class.java)
     }
 }

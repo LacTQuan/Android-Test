@@ -5,5 +5,6 @@ data class SearchRequest(
     val gl: String = "us",
     val type: String = "images",
     val engine: String = "google",
-    val num: Int = 10
+    val num: Int = 10,
+    val page: Int = 1
 )

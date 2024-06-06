@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidtest.ui.features.search_screen.SearchViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.androidtest.model.response.SuggestionValue
 import dagger.hilt.android.AndroidEntryPoint
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,9 +35,12 @@ fun MySearchBar(
     onSearch: (String) -> Unit,
     active: Boolean,
     onActiveChange: (Boolean) -> Unit,
+    suggestions: List<SuggestionValue> = emptyList()
 ) {
     SearchBar(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         query = query,
         onQueryChange = onQueryChange,
         onSearch = onSearch,
@@ -51,7 +56,7 @@ fun MySearchBar(
                     contentDescription = "Search icon",
                     tint = Color.Gray
                 )
-                Text(text="Type something to search")
+                Text(text = "Type something to search")
             }
         },
         trailingIcon = {
@@ -69,7 +74,23 @@ fun MySearchBar(
                 )
             }
         },
-    ) {}
+    ) {
+        LazyColumn {
+            items(suggestions.size) { index ->
+                Text(
+                    text = suggestions[index].value,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable(onClick = {
+                            onQueryChange(suggestions[index].value)
+                            onActiveChange(false)
+                            onSearch(suggestions[index].value)
+                        })
+                )
+            }
+        }
+    }
 }
 
 @Preview
