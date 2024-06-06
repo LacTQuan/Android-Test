@@ -1,5 +1,6 @@
 package com.example.androidtest
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.androidtest.ui.features.details_screen.DetailsScreen
 import com.example.androidtest.ui.features.search_screen.SearchContract
 import com.example.androidtest.ui.features.search_screen.SearchScreen
 import com.example.androidtest.ui.features.search_screen.SearchViewModel
@@ -39,12 +41,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun SearchingApp() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = "searchScreen") {
         composable("searchScreen") {
-            val viewModel: SearchViewModel = hiltViewModel()
+            val viewModel: SearchViewModel = hiltViewModel(navController.getBackStackEntry("searchScreen"))
             SearchScreen(
                 viewModel = viewModel,
                 onNavigationRequested = { position ->
@@ -54,8 +57,12 @@ fun SearchingApp() {
         }
 
         composable("detailsScreen/{position}") { backStackEntry ->
+            val viewModel: SearchViewModel = hiltViewModel(navController.getBackStackEntry("searchScreen"))
             val position = backStackEntry.arguments?.getString("position")
-            Text(text = "Details screen for position: $position")
+            DetailsScreen(viewModel = viewModel, position = position?.toInt() ?: 0, onBack = {
+                Log.d("SearchingApp", "onBack")
+                navController.popBackStack()
+            })
         }
     }
 }

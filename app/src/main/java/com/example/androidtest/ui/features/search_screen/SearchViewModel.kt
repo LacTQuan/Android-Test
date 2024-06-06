@@ -71,7 +71,6 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
     private suspend fun performSearch() {
         state = state.copy(isActive = false)
         val searchResponse = searchService.search(state.query, state.page)
-        Log.d("SearchViewModel", "performSearch: ${state.page}")
         if (state.page == 1) {
             state = state.copy(searchResults = searchResponse)
         } else if (state.page > 1) {

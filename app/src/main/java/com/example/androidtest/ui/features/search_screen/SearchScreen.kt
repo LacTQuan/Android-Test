@@ -14,9 +14,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.androidtest.ui.components.MySearchBar
 import com.example.androidtest.ui.components.SearchItem
@@ -69,11 +67,6 @@ fun SearchScreen(
         }
     }
 }
-
-data class ListItem(
-    val height: Dp,
-    val color: Color
-)
 
 @Preview
 @Composable
