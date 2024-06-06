@@ -2,12 +2,13 @@ package com.example.androidtest.ui.features.details_screen
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
-import android.widget.ImageButton
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -35,12 +36,19 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.example.androidtest.ui.features.search_screen.SearchViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailsScreen(viewModel: SearchViewModel, position: Int = 0, onBack: () -> Unit) {
+fun DetailsScreen(
+    viewModel: SearchViewModel,
+    position: Int = 0,
+    onBack: () -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope
+) {
     val images = viewModel.state.searchResults?.images ?: emptyList()
     val pagerState = rememberPagerState(pageCount = { images.size }, initialPage = position)
-    val openUrlLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {}
+    val openUrlLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {}
 
     Box(modifier = Modifier.fillMaxSize()) {
         IconButton(
@@ -50,7 +58,7 @@ fun DetailsScreen(viewModel: SearchViewModel, position: Int = 0, onBack: () -> U
                 .align(Alignment.TopStart)
                 .zIndex(1f)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
         }
 
         HorizontalPager(
@@ -63,18 +71,25 @@ fun DetailsScreen(viewModel: SearchViewModel, position: Int = 0, onBack: () -> U
             val height =
                 width * (images[index].thumbnailHeight.toFloat() / images[index].thumbnailWidth.toFloat())
 
-            Box(
-                modifier = Modifier
-                    .width(width)
-                    .height(height)
-                    .fillMaxWidth()
-            ) {
-                AsyncImage(
-                    model = images[index].thumbnailUrl,
-                    contentDescription = null,
-                    imageLoader = ImageLoader(LocalContext.current),
-                    modifier = Modifier.fillMaxSize()
-                )
+            with(sharedTransitionScope) {
+                Box(
+                    modifier = Modifier
+                        .width(width)
+                        .height(height)
+                        .fillMaxWidth()
+                ) {
+                    AsyncImage(
+                        model = images[index].thumbnailUrl,
+                        contentDescription = null,
+                        imageLoader = ImageLoader(LocalContext.current),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .sharedElement(
+                                rememberSharedContentState(key = images[index].position),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                    )
+                }
             }
 
 

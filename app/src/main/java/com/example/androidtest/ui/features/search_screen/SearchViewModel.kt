@@ -22,13 +22,13 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
             query = "",
             isActive = false,
             suggestions = emptyList(),
-            page = 1
+            page = 1,
+            isLoading = false
         )
     )
         private set
 
-    var effects = Channel<SearchContract.Effect>(UNLIMITED)
-        private set
+    private var effects = Channel<SearchContract.Effect>(UNLIMITED)
 
 
     fun onQueryChange(query: String) {
@@ -69,13 +69,13 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
     }
 
     private suspend fun performSearch() {
-        state = state.copy(isActive = false)
+        state = state.copy(isActive = false, isLoading = true)
         val searchResponse = searchService.search(state.query, state.page)
         if (state.page == 1) {
-            state = state.copy(searchResults = searchResponse)
+            state = state.copy(searchResults = searchResponse, isLoading = false)
         } else if (state.page > 1) {
             val currentResults = state.searchResults?.images ?: emptyList()
-            state = state.copy(searchResults = searchResponse.copy(images = currentResults + searchResponse.images))
+            state = state.copy(searchResults = searchResponse.copy(images = currentResults + searchResponse.images), isLoading = false)
         }
         effects.send(SearchContract.Effect.DataWasLoaded)
     }

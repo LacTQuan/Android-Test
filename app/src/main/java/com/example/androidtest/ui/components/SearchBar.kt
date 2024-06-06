@@ -1,5 +1,6 @@
 package com.example.androidtest.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,8 @@ fun MySearchBar(
     SearchBar(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            .background(Color(100, 255, 207, 128))
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top=4.dp),
         query = query,
         onQueryChange = onQueryChange,
         onSearch = onSearch,

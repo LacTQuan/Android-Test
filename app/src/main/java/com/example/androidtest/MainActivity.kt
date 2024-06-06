@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -41,28 +43,40 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun SearchingApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "searchScreen") {
-        composable("searchScreen") {
-            val viewModel: SearchViewModel = hiltViewModel(navController.getBackStackEntry("searchScreen"))
-            SearchScreen(
-                viewModel = viewModel,
-                onNavigationRequested = { position ->
-                    navController.navigate("detailsScreen/$position")
-                }
-            )
-        }
+    SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+        NavHost(navController, startDestination = "searchScreen") {
+            composable("searchScreen") {
+                val viewModel: SearchViewModel =
+                    hiltViewModel(navController.getBackStackEntry("searchScreen"))
+                SearchScreen(
+                    viewModel = viewModel,
+                    onNavigationRequested = { position ->
+                        navController.navigate("detailsScreen/$position")
+                    },
+                    animatedVisibilityScope = this@composable,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
+            }
 
-        composable("detailsScreen/{position}") { backStackEntry ->
-            val viewModel: SearchViewModel = hiltViewModel(navController.getBackStackEntry("searchScreen"))
-            val position = backStackEntry.arguments?.getString("position")
-            DetailsScreen(viewModel = viewModel, position = position?.toInt() ?: 0, onBack = {
-                Log.d("SearchingApp", "onBack")
-                navController.popBackStack()
-            })
+            composable("detailsScreen/{position}") { backStackEntry ->
+                val viewModel: SearchViewModel =
+                    hiltViewModel(navController.getBackStackEntry("searchScreen"))
+                val position = backStackEntry.arguments?.getString("position")
+                DetailsScreen(
+                    viewModel = viewModel,
+                    position = position?.toInt() ?: 0,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    animatedVisibilityScope = this@composable,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
+            }
         }
     }
 }

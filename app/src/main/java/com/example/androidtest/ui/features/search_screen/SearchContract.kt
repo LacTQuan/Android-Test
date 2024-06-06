@@ -9,7 +9,8 @@ class SearchContract {
         val searchResults: SearchResponse? = null,
         val isActive: Boolean = false,
         val suggestions: List<SuggestionValue> = emptyList(),
-        val page: Int = 0
+        val page: Int = 0,
+        val isLoading: Boolean = false
     )
 
     sealed class Effect {
