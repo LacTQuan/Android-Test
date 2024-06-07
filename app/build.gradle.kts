@@ -110,6 +110,9 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.7.0-alpha07")
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
+    // Jedis
+    implementation("redis.clients:jedis:4.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

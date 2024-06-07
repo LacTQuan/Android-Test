@@ -8,7 +8,7 @@ class SearchContract {
         val query: String = "",
         val searchResults: SearchResponse? = null,
         val isActive: Boolean = false,
-        val suggestions: List<SuggestionValue> = emptyList(),
+        val suggestions: List<SuggestionValue>? = emptyList(),
         val page: Int = 0,
         val isLoading: Boolean = false
     )

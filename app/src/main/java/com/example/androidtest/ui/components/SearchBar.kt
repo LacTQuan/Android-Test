@@ -116,7 +116,7 @@ fun MySearchBar(
 @Composable
 fun DropdownMenu(
     active: Boolean,
-    suggestions: List<SuggestionValue>,
+    suggestions: List<SuggestionValue>?,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     onActiveChange: (Boolean) -> Unit,
@@ -134,21 +134,23 @@ fun DropdownMenu(
                 modifier = Modifier.padding(8.dp)
                     .padding(start = 16.dp)
             ) {
-                items(suggestions.size) { index ->
-                    Text(
-                        text = suggestions[index].value,
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable(onClick = {
-                                focusManager.clearFocus()
-                                onQueryChange(suggestions[index].value)
-                                onActiveChange(false)
-                                onSearch(suggestions[index].value)
-                            })
-                    )
+                if (suggestions != null) {
+                    items(suggestions.size) { index ->
+                        Text(
+                            text = suggestions[index].value,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                                .clickable(onClick = {
+                                    focusManager.clearFocus()
+                                    onQueryChange(suggestions[index].value)
+                                    onActiveChange(false)
+                                    onSearch(suggestions[index].value)
+                                })
+                        )
+                    }
                 }
             }
         }

@@ -54,12 +54,11 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
 
     fun onSearch(query: String) {
         if (query.isNotEmpty()) {
-            state = state.copy(query = query, isActive = false, suggestions = emptyList())
+            state = state.copy(query = query, isActive = false, suggestions = emptyList(), page = 1)
             viewModelScope.launch {
                 performSearch()
             }
         }
-        state = state.copy(page = 1)
     }
 
     fun loadMore() {
@@ -83,6 +82,7 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
 
     private suspend fun performAutocomplete() {
         val autocompleteResponse = searchService.autocomplete(state.query)
+        Log.d("SearchViewModel", "Autocomplete response: $autocompleteResponse")
         state = state.copy(suggestions = autocompleteResponse.suggestions)
     }
 }
