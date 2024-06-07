@@ -36,7 +36,7 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
         if (state.isActive) {
             if (query.isEmpty()) {
                 state = state.copy(suggestions = emptyList(), isActive = false)
-            } else if (System.currentTimeMillis() - lastQueryTime > 200) {
+            } else if (System.currentTimeMillis() - lastQueryTime > 300) {
                 lastQueryTime = System.currentTimeMillis()
                 viewModelScope.launch {
                     performAutocomplete()

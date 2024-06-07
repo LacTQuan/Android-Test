@@ -1,6 +1,7 @@
 package com.example.androidtest.di
 
 import android.util.Log
+import com.example.androidtest.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,7 @@ class JedisProvider {
     @Singleton
     fun provideJedis(): Jedis {
         try {
-            val jedis = Jedis("192.168.2.105", 6379)
+            val jedis = Jedis(BuildConfig.REDIS_HOST, BuildConfig.REDIS_PORT.toInt())
             Log.d("JedisProvider", "Jedis connected")
             return jedis
         } catch (e: Exception) {
