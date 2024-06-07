@@ -27,8 +27,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
 import com.example.androidtest.model.response.Image
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -62,6 +64,7 @@ fun SearchItem(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
+                            .padding(0.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .border(
                                 width = 1.dp,
@@ -72,6 +75,7 @@ fun SearchItem(
                                 rememberSharedContentState(key = item.position),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             )
+                            .zIndex(0f)
                     )
                 }
             )

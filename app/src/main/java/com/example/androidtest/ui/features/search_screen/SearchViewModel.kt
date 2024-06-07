@@ -32,15 +32,15 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
 
 
     fun onQueryChange(query: String) {
-        state = state.copy(query = query)
+        state = state.copy(query = query, isActive = true)
         if (state.isActive) {
             if (query.isEmpty()) {
-                state = state.copy(suggestions = emptyList())
+                state = state.copy(suggestions = emptyList(), isActive = false)
             } else if (System.currentTimeMillis() - lastQueryTime > 200) {
                 lastQueryTime = System.currentTimeMillis()
-//                viewModelScope.launch {
-//                    performAutocomplete()
-//                }
+                viewModelScope.launch {
+                    performAutocomplete()
+                }
             }
         }
     }
@@ -54,7 +54,7 @@ class SearchViewModel @Inject constructor(private val searchService: SearchServi
 
     fun onSearch(query: String) {
         if (query.isNotEmpty()) {
-            state = state.copy(query = query)
+            state = state.copy(query = query, isActive = false, suggestions = emptyList())
             viewModelScope.launch {
                 performSearch()
             }
