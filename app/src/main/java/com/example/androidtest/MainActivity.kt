@@ -29,16 +29,20 @@ import kotlinx.coroutines.flow.emptyFlow
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AndroidTestTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    SearchingApp()
+        try {
+            super.onCreate(savedInstanceState)
+            setContent {
+                AndroidTestTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        SearchingApp()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error: ${e.message}")
         }
     }
 }

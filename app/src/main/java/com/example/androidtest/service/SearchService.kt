@@ -11,12 +11,22 @@ import javax.inject.Singleton
 @Singleton
 class SearchService @Inject constructor(private val searchApi: SearchApi) {
     suspend fun search(query: String, page: Int): SearchResponse {
-        val searchRequest = SearchRequest(q = query, gl = "vn", page = page)
-        return searchApi.searchImages(searchRequest)
+        try {
+            val searchRequest = SearchRequest(q = query, gl = "vn", page = page)
+            return searchApi.searchImages(searchRequest)
+        } catch (e: Exception) {
+            Log.e("SearchService", "search: $e")
+            throw e
+        }
     }
 
     suspend fun autocomplete(query: String): AutoCompleteResponse {
-        val searchRequest = SearchRequest(q = query, gl = "vn", type = "autocomplete")
-        return searchApi.autocomplete(searchRequest)
+        try {
+            val searchRequest = SearchRequest(q = query, gl = "vn", type = "autocomplete")
+            return searchApi.autocomplete(searchRequest)
+        } catch (e: Exception) {
+            Log.e("SearchService", "autocomplete: $e")
+            throw e
+        }
     }
 }
