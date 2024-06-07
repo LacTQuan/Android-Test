@@ -9,33 +9,53 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SearchService @Inject constructor(private val searchApi: SearchApi, private val jedis: Jedis, private val gson: Gson) {
+class SearchService @Inject constructor(
+    private val searchApi: SearchApi,
+    private val jedis: Jedis,
+    private val gson: Gson
+) {
     suspend fun search(query: String, page: Int): SearchResponse {
         try {
-
             return withContext(Dispatchers.IO) {
                 val searchRequest = SearchRequest(q = query, gl = "vn", page = page)
 
                 val cacheKey = "search:$query:$page"
-                val cachedResponse = withContext(Dispatchers.IO) { jedis.get(cacheKey) }
+                var cachedResponse: String? = null
+
+                // Attempt to get cached response from Redis
+                try {
+                    cachedResponse = jedis.get(cacheKey)
+                } catch (redisException: Exception) {
+                    Log.e(
+                        "SearchService",
+                        "Failed to get cached response from Redis: $redisException"
+                    )
+                }
+
                 if (cachedResponse != null) {
                     return@withContext gson.fromJson(cachedResponse, SearchResponse::class.java)
                 }
 
+                // If no cached response found, call searchApi
                 val response = searchApi.searchImages(searchRequest)
                 Log.d("SearchService", "Search response: $cacheKey")
 
-                withContext(Dispatchers.IO) { jedis.set(cacheKey, gson.toJson(response)) }
+                try {
+                    jedis.set(cacheKey, gson.toJson(response))
+                } catch (redisException: Exception) {
+                    Log.e("SearchService", "Failed to cache response in Redis: $redisException")
+                }
 
                 return@withContext response
             }
         } catch (e: Exception) {
             e.message?.let { Log.e("SearchService", it) }
-            throw e
+            return searchApi.searchImages(SearchRequest(q = query, gl = "vn", page = page))
         }
     }
 
@@ -45,19 +65,37 @@ class SearchService @Inject constructor(private val searchApi: SearchApi, privat
                 val searchRequest = SearchRequest(q = query, gl = "vn", type = "autocomplete")
 
                 val cacheKey = "autocomplete:$query"
-                val cachedResponse = withContext(Dispatchers.IO) { jedis.get(cacheKey) }
+                var cachedResponse: String? = null
+
+                // Attempt to get cached response from Redis
+                try {
+                    cachedResponse = jedis.get(cacheKey)
+                } catch (redisException: Exception) {
+                    Log.e(
+                        "AutocompleteService",
+                        "Failed to get cached response from Redis: $redisException"
+                    )
+                }
+
                 if (cachedResponse != null) {
-                    Log.d("SearchService", "Cached autocomplete response: $cacheKey")
                     return@withContext gson.fromJson(cachedResponse, AutoCompleteResponse::class.java)
                 }
 
+                // If no cached response found, call searchApi
                 val response = searchApi.autocomplete(searchRequest)
-                Log.d("SearchService", "Autocomplete response: ${response.suggestions}")
+                Log.d("AutocompleteService", "Autocomplete response: $cacheKey")
+
+                try {
+                    jedis.set(cacheKey, gson.toJson(response))
+                } catch (redisException: Exception) {
+                    Log.e("AutocompleteService", "Failed to cache response in Redis: $redisException")
+                }
+
                 return@withContext response
             }
         } catch (e: Exception) {
-            Log.e("SearchService", "autocomplete: $e")
-            throw e
+            e.message?.let { Log.e("SearchService", it) }
+            return searchApi.autocomplete(SearchRequest(q = query, gl = "vn", type = "autocomplete"))
         }
     }
 }
